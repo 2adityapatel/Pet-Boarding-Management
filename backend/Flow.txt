@@ -1,0 +1,110 @@
+# Pet Boarding Application Flow
+
+## 1. User Authentication
+
+1. User signs up:
+   - POST request to `/signup`
+   - Creates a new User in the database
+   - If role is 'USER', also creates a UserProfile
+
+2. User logs in:
+   - POST request to `/login`
+   - Checks credentials and generates a JWT token
+   - Sets token in a cookie for subsequent authenticated requests
+
+## 2. User Profile Management
+
+1. Get user profile:
+   - GET request to `/user/user-profile`
+   - Requires authentication (verifyTokenAndRole middleware)
+   - Retrieves UserProfile data for the logged-in user
+
+2. Update user profile:
+   - PUT request to `/user/user-profile`
+   - Requires authentication
+   - Updates UserProfile data for the logged-in user
+
+## 3. Pet Management
+
+1. Create a new pet:
+   - POST request to `/pets`
+   - Requires authentication
+   - Creates a new Pet associated with the user
+
+2. Get pet details:
+   - GET request to `/pets/:id`
+   - Requires authentication
+   - Retrieves details of a specific pet
+
+3. Update pet details:
+   - PUT request to `/pets/:id`
+   - Requires authentication
+   - Updates details of a specific pet
+
+4. Delete a pet:
+   - DELETE request to `/pets/:petId`
+   - Requires authentication
+   - Removes a specific pet from the database
+
+5. Get all pets for a user:
+   - GET request to `/users/:userId/pets`
+   - Requires authentication
+   - Retrieves all pets associated with a specific user
+
+## 4. Booking Management (New Feature)
+
+1. Create a new booking:
+   - POST request to `/api/bookings`
+   - Requires authentication (USER role)
+   - Creates a new Booking associated with the user and a specific pet
+
+2. Get user's bookings:
+   - GET request to `/api/bookings`
+   - Requires authentication (USER role)
+   - Retrieves all bookings for the logged-in user
+
+3. Check availability:
+   - GET request to `/api/availability`
+   - Checks if a facility is available for the specified dates
+
+4. Admin: Get all bookings:
+   - GET request to `/api/admin/bookings`
+   - Requires authentication (ADMIN role)
+   - Retrieves all bookings across all users
+
+## 5. Facility Management (Admin Feature)
+
+1. Create a new facility:
+   - POST request to `/api/admin/facilities`
+   - Requires authentication (ADMIN role)
+   - Creates a new Facility in the database
+
+2. Update facility details:
+   - PUT request to `/api/admin/facilities/:id`
+   - Requires authentication (ADMIN role)
+   - Updates details of a specific facility
+
+3. Get all facilities:
+   - GET request to `/api/admin/facilities`
+   - Requires authentication (ADMIN role)
+   - Retrieves all facilities
+
+## Data Flow
+
+1. Client (Frontend) sends HTTP requests to the server
+2. Server (Express.js) receives requests
+3. Middleware (e.g., authentication) processes the request
+4. Appropriate route handler is called
+5. Route handler interacts with the database (MongoDB via Mongoose)
+6. Database returns data to the route handler
+7. Route handler sends response back to the client
+
+## Authentication Flow
+
+1. User logs in and receives a JWT token
+2. Token is stored in a cookie
+3. Subsequent requests include this cookie
+4. `verifyTokenAndRole` middleware checks the token and role for protected routes
+5. If token is valid and role is correct, the request proceeds; otherwise, it's rejected
+
+This flow ensures that only authenticated users can access their own data and perform actions, while admin users have additional privileges for managing the entire system.
